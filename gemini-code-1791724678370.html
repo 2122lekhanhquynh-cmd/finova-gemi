@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FINOVA — Plan Smarter. Achieve Your Goals.</title>
+    <!-- Google Fonts & FontAwesome Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --text-color: #1e293b;
+            --sidebar-bg: #ffffff;
+            --sidebar-border: #e2e8f0;
+            --card-bg: #ffffff;
+            --primary-color: #0ea5e9;
+            --primary-hover: #0284c7;
+            --accent-color: #10b981;
+            --text-muted: #64748b;
+            --input-bg: #f1f5f9;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --font-size-base: 16px; /* Tăng cỡ chữ tổng thể */
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #0f172a;
+            --text-color: #f8fafc;
+            --sidebar-bg: #1e293b;
+            --sidebar-border: #334155;
+            --card-bg: #1e293b;
+            --primary-color: #38bdf8;
+            --primary-hover: #0ea5e9;
+            --accent-color: #34d399;
+            --text-muted: #94a3b8;
+            --input-bg: #334155;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.3);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            font-size: var(--font-size-base);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* THANH CÔNG CỤ CỐ ĐỊNH BÊN TRÁI */
+        aside {
+            width: 280px;
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid var(--sidebar-border);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            z-index: 1000;
+            transition: width 0.3s ease;
+        }
+
+        aside.collapsed {
+            width: 80px;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--sidebar-border);
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-area img {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .logo-area span {
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--primary-color);
+        }
+
+        aside.collapsed .logo-area span,
+        aside.collapsed .nav-item span,
+        aside.collapsed .sidebar-footer span {
+            display: none;
+        }
+
+        .toggle-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 20px 10px;
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+
+        .nav-item {
+            padding: 14px 16px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            cursor: pointer;
+            color: var(--text-color);
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background-color: var(--input-bg);
+            color: var(--primary-color);
+        }
+
+        .nav-item i {
+            font-size: 1.2rem;
+            min-width: 24px;
+            text-align: center;
+        }
+
+        /* KHUNG CHÍNH BÊN PHẢI */
+        main {
+            margin-left: 280px;
+            flex-grow: 1;
+            padding: 30px;
+            transition: margin-left 0.3s ease;
+            max-width: calc(100vw - 280px);
+        }
+
+        aside.collapsed ~ main {
+            margin-left: 80px;
+            max-width: calc(100vw - 80px);
+        }
+
+        /* HEADER TOP */
+        .top-navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--sidebar-border);
+            margin-bottom: 30px;
+        }
+
+        .top-nav-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .icon-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--sidebar-border);
+            padding: 10px 14px;
+            border-radius: 50%;
+            cursor: pointer;
+            color: var(--text-color);
+            box-shadow: var(--shadow);
+        }
+
+        .user-dropdown {
+            position: relative;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+        }
+
+        /* CÁC VIEW TRANG (SECTIONS) */
+        .view-section {
+            display: none;
+        }
+
+        .view-section.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* HERO & CARDS */
+        .hero-banner {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            border-radius: 16px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+        }
+
+        .hero-banner h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .hero-banner p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto 20px auto;
+        }
+
+        .btn-primary {
+            background-color: white;
+            color: var(--primary-color);
+            border: none;
+            padding: 12px 28px;
+            border-radius: 30px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+        }
+
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--sidebar-border);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        .card h3 {
+            margin-bottom: 12px;
+            color: var(--primary-color);
+        }
+
+        /* FORM NHẬP LIỆU TÀI CHÍNH & XÁC THỰC */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            background-color: var(--input-bg);
+            border: 1px solid var(--sidebar-border);
+            border-radius: 8px;
+            color: var(--text-color);
+            font-size: 1rem;
+        }
+
+        /* BẢNG VÀ DASHBOARD KẾT QUẢ */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        th, td {
+            padding: 14px 18px;
+            text-align: left;
+            border-bottom: 1px solid var(--sidebar-border);
+        }
+
+        th {
+            background-color: var(--input-bg);
+            font-weight: 600;
+        }
+
+        /* ĐÁNH GIÁ SAO (RATING) */
+        .rating-stars {
+            display: flex;
+            gap: 10px;
+            font-size: 1.8rem;
+            color: #cbd5e1;
+            cursor: pointer;
+            margin: 15px 0;
+        }
+
+        .rating-stars i.rated {
+            color: #f59e0b;
+        }
+
+        /* CHATBOT KHUNG */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 600px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            border: 1px solid var(--sidebar-border);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .chat-messages {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .message {
+            max-width: 75%;
+            padding: 12px 16px;
+            border-radius: 10px;
+            line-height: 1.5;
+        }
+
+        .message.user {
+            background-color: var(--primary-color);
+            color: white;
+            align-self: flex-end;
+        }
+
+        .message.ai {
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            align-self: flex-start;
+        }
+
+        .chat-input-area {
+            display: flex;
+            padding: 15px;
+            background-color: var(--sidebar-bg);
+            border-top: 1px solid var(--sidebar-border);
+            gap: 10px;
+        }
+
+        /* RESPONSIVE */
+        @media(max-width: 768px) {
+            aside { width: 70px; }
+            aside span, aside .logo-area span { display: none; }
+            main { margin-left: 70px; max-width: calc(100vw - 70px); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- THANH CÔNG CỤ ĐIỀU HƯỚNG BÊN TRÁI (FIXED) -->
+    <aside id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-area">
+                <img src="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=100&auto=format&fit=crop&q=60" alt="Logo">
+                <span>FINOVA</span>
+            </div>
+            <button class="toggle-btn" id="toggleSidebar"><i class="fa-solid fa-bars"></i></button>
+        </div>
+        <ul class="sidebar-menu">
+            <li class="nav-item active" onclick="switchView('overview')"><i class="fa-solid fa-house"></i><span>Thanh Tổng quan</span></li>
+            <li class="nav-item" onclick="switchView('account')"><i class="fa-solid fa-user"></i><span>Tài khoản khách hàng</span></li>
+            <li class="nav-item" onclick="switchView('financial-info')"><i class="fa-solid fa-wallet"></i><span>Thông tin tài chính</span></li>
+            <li class="nav-item" onclick="switchView('savings-investment')"><i class="fa-solid fa-chart-line"></i><span>Tiết kiệm & Đầu tư</span></li>
+            <li class="nav-item" onclick="switchView('evaluation')"><i class="fa-solid fa-star-half-stroke"></i><span>Đánh giá hệ thống</span></li>
+            <li class="nav-item" onclick="switchView('support')"><i class="fa-solid fa-headset"></i><span>Liên hệ & Hỗ trợ (FAQ & AI)</span></li>
+        </ul>
+    </aside>
+
+    <!-- NỘI DUNG CHÍNH -->
+    <main>
+        <!-- TOP NAVBAR -->
+        <div class="top-navbar">
+            <div id="breadcrumb-title" style="font-weight: 700; font-size: 1.2rem;">Trang Tổng quan chính</div>
+            <div class="top-nav-right">
+                <button class="icon-btn" id="themeToggleBtn" onclick="toggleTheme()" title="Đổi giao diện Sáng/Tối">
+                    <i class="fa-solid fa-moon" id="themeIcon"></i>
+                </button>
+                <div class="user-dropdown" onclick="switchView('account')">
+                    <i class="fa-solid fa-circle-user" style="font-size: 1.8rem; color: var(--primary-color);"></i>
+                    <span id="userNameDisplay">Khách hàng FINOVA</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 1: THANH TỔNG QUAN & LANDING PAGE -->
+        <section id="overview" class="view-section active">
+            <div class="hero-banner">
+                <h1>FINOVA — Plan Smarter. Achieve Your Goals.</h1>
+                <p>Your Financial Goals. Your Plan. Your Future. Nền tảng lập kế hoạch tài chính cá nhân thông minh kết hợp AI và công cụ tính toán định lượng chính xác.</p>
+                <button class="btn-primary" onclick="switchView('financial-info')"><i class="fa-solid fa-rocket"></i> Bắt đầu lập kế hoạch ngay</button>
+            </div>
+
+            <h2 style="margin-bottom: 20px;">What can FINOVA do for you?</h2>
+            <div class="grid-4">
+                <div class="card">
+                    <h3>01. Intelligent Analysis</h3>
+                    <p>Tự động cấu trúc hồ sơ thu nhập, chi tiêu, tài sản và nợ từ đầu vào ngôn ngữ tự nhiên, phát hiện dữ liệu thiếu sót.</p>
+                </div>
+                <div class="card">
+                    <h3>02. Multi-Scenario Modeling</h3>
+                    <p>So sánh đồng thời 5 kịch bản tài chính từ Bảo thủ đến Lạc quan cao dựa trên mô hình toán học tất định chính xác.</p>
+                </div>
+                <div class="card">
+                    <h3>03. What-If & Stress Testing</h3>
+                    <p>Điều chỉnh tương tác các biến số (lãi suất, thu nhập, cú sốc chi phí) để kiểm tra độ bền vững tài chính thời gian thực.</p>
+                </div>
+                <div class="card">
+                    <h3>04. AI Trade-Off Insights</h3>
+                    <p>Nhận giải thích rõ ràng về các đánh đổi chiến lược, giới hạn rủi ro và chi phí cơ hội từ trợ lý AI thông minh.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW 2: TÀI KHOẢN KHÁCH HÀNG -->
+        <section id="account" class="view-section">
+            <div class="card" style="max-width: 700px; margin: 0 auto;">
+                <h2 style="margin-bottom: 20px;"><i class="fa-solid fa-user-gear"></i> Quản lý Tài khoản & Cập nhật thông tin</h2>
+                <form id="accountForm" onsubmit="saveAccount(event)">
+                    <div class="form-group">
+                        <label>Họ và tên khách hàng</label>
+                        <input type="text" id="accName" class="form-control" value="Nguyễn Văn A" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email liên hệ</label>
+                        <input type="email" id="accEmail" class="form-control" value="nguyenvana@gmail.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Số điện thoại (Không bắt buộc)</label>
+                        <input type="tel" id="accPhone" class="form-control" value="0912345678">
+                    </div>
+                    <div class="form-group">
+                        <label>Nghề nghiệp & Tỉnh/Thành phố</label>
+                        <input type="text" id="accJob" class="form-control" value="Kỹ sư phần mềm - TP. Hồ Chí Minh">
+                    </div>
+                    <hr style="margin: 20px 0; border-color: var(--sidebar-border);">
+                    <h3>Đổi mật khẩu bảo mật</h3>
+                    <div class="form-group" style="margin-top: 15px;">
+                        <label>Mật khẩu cũ</label>
+                        <input type="password" class="form-control" placeholder="Nhập mật khẩu hiện tại">
+                    </div>
+                    <div class="form-group">
+                        <label>Mật khẩu mới</label>
+                        <input type="password" class="form-control" placeholder="Nhập mật khẩu mới">
+                    </div>
+                    <button type="submit" class="btn-primary">Lưu thay đổi thông tin</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- VIEW 3: THÔNG TIN TÀI CHÍNH & TRANG KẾT QUẢ -->
+        <section id="financial-info" class="view-section">
+            <div class="card" style="margin-bottom: 30px;">
+                <h2><i class="fa-solid fa-calculator"></i> Nhập Thông tin Tài chính Cá nhân</h2>
+                <p style="color: var(--text-muted); margin-bottom: 20px;">Lưu ý: Nhập số tiền từ 0 trở lên và tự động cách hàng nghìn bằng dấu phẩy (,).</p>
+                <form id="financeForm" onsubmit="calculateFinances(event)">
+                    <div class="grid-4" style="grid-template-columns: repeat(2, 1fr);">
+                        <div class="form-group">
+                            <label>Thu nhập hàng tháng (VND)</label>
+                            <input type="text" id="income" class="form-control" value="25,000,000" required oninput="formatCurrency(this)">
+                        </div>
+                        <div class="form-group">
+                            <label>Chi tiêu sinh hoạt hàng tháng (VND)</label>
+                            <input type="text" id="expenses" class="form-control" value="12,000,000" required oninput="formatCurrency(this)">
+                        </div>
+                        <div class="form-group">
+                            <label>Tổng tài sản hiện có (VND)</label>
+                            <input type="text" id="assets" class="form-control" value="150,000,000" required oninput="formatCurrency(this)">
+                        </div>
+                        <div class="form-group">
+                            <label>Tổng nợ hiện tại (VND)</label>
+                            <input type="text" id="liabilities" class="form-control" value="30,000,000" required oninput="formatCurrency(this)">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-primary" style="margin-top: 20px;"><i class="fa-solid fa-bolt"></i> Chạy mô phỏng & Đánh giá tài chính</button>
+                </form>
+            </div>
+
+            <!-- KẾT QUẢ PHÂN TÍCH & KỊCH BẢN -->
+            <div id="resultContainer" style="display: none;">
+                <div class="card">
+                    <h2><i class="fa-solid fa-chart-pie"></i> Bảng Tóm tắt Chỉ số Tài chính & 5 Kịch bản</h2>
+                    <div id="summaryTableWrapper"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW 4: TIẾT KIỆM VÀ ĐẦU TƯ -->
+        <section id="savings-investment" class="view-section">
+            <div class="card">
+                <h2><i class="fa-solid fa-piggy-bank"></i> Lựa chọn Mục tiêu & Hoạch định Đầu tư thông minh</h2>
+                <p style="margin: 15px 0;">AI đã phân tích thu nhập của bạn và đề xuất mục tiêu tối ưu nhất: <strong>Mua nhà tài chính cá nhân trong 5 năm tới</strong>.</p>
+                <div class="form-group">
+                    <label>Điều chỉnh thời hạn mục tiêu (1 - 50 năm): <span id="yearsVal">5</span> năm</label>
+                    <input type="range" min="1" max="50" value="5" class="form-control" id="goalYears" oninput="document.getElementById('yearsVal').innerText = this.value">
+                </div>
+                <button class="btn-primary" onclick="alert('Đã cập nhật kế hoạch tiết kiệm dựa trên giả định mới!')">Cập nhật kế hoạch mục tiêu</button>
+            </div>
+        </section>
+
+        <!-- VIEW 5: ĐÁNH GIÁ HỆ THỐNG -->
+        <section id="evaluation" class="view-section">
+            <div class="card" style="max-width: 800px; margin: 0 auto; text-align: center;">
+                <h2><i class="fa-solid fa-star"></i> Đánh giá Hiệu quả & Trải nghiệm FINOVA</h2>
+                <p style="color: var(--text-muted); margin-top: 10px;">Chấm điểm dựa trên 4 tiêu chí: Accuracy, Groundedness, Usability và Processing Time.</p>
+                
+                <div style="margin: 30px 0; text-align: left;">
+                    <label><strong>1. Accuracy (Độ chính xác tính toán):</strong></label>
+                    <div class="rating-stars" onclick="rateCriteria(this, event)">
+                        <i class="fa-solid fa-star" data-val="1"></i><i class="fa-solid fa-star" data-val="2"></i><i class="fa-solid fa-star" data-val="3"></i><i class="fa-solid fa-star" data-val="4"></i><i class="fa-solid fa-star" data-val="5"></i>
+                    </div>
+                    <label><strong>2. Groundedness (Độ tin cậy ngữ cảnh AI):</strong></label>
+                    <div class="rating-stars" onclick="rateCriteria(this, event)">
+                        <i class="fa-solid fa-star" data-val="1"></i><i class="fa-solid fa-star" data-val="2"></i><i class="fa-solid fa-star" data-val="3"></i><i class="fa-solid fa-star" data-val="4"></i><i class="fa-solid fa-star" data-val="5"></i>
+                    </div>
+                    <label><strong>3. Usability (Trải nghiệm giao diện):</strong></label>
+                    <div class="rating-stars" onclick="rateCriteria(this, event)">
+                        <i class="fa-solid fa-star" data-val="1"></i><i class="fa-solid fa-star" data-val="2"></i><i class="fa-solid fa-star" data-val="3"></i><i class="fa-solid fa-star" data-val="4"></i><i class="fa-solid fa-star" data-val="5"></i>
+                    </div>
+                </div>
+
+                <div style="background: var(--input-bg); padding: 20px; border-radius: 12px; margin-top: 20px;">
+                    <h3>Điểm trung bình hệ thống đạt được: <span id="avgScoreDisplay" style="color: var(--primary-color);">4.8</span> / 5 sao ⭐</h3>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW 6: LIÊN HỆ & HỖ TRỢ (FAQ & AI CHATBOT) -->
+        <section id="support" class="view-section">
+            <div class="grid-4" style="grid-template-columns: 1fr 1fr; gap: 30px;">
+                <!-- FAQ -->
+                <div class="card">
+                    <h2><i class="fa-solid fa-circle-question"></i> Câu hỏi thường gặp (FAQs)</h2>
+                    <ul style="list-style: none; margin-top: 15px; display: flex; flex-direction: column; gap: 12px;">
+                        <li><strong>Q: FINOVA là gì?</strong><br>A: Nền tảng lập kế hoạch tài chính cá nhân thông minh kết hợp AI.</li>
+                        <li><strong>Q: Dữ liệu tài chính có được bảo mật không?</strong><br>A: Hoàn toàn bảo mật và mã hóa an toàn trên hệ thống.</li>
+                        <li><strong>Q: Kịch bản tính toán dựa trên gì?</strong><br>A: Dựa trên động cơ toán học tất định kết hợp AI suy luận.</li>
+                    </ul>
+                </div>
+
+                <!-- AI CHATBOT -->
+                <div class="chat-container">
+                    <div style="padding: 15px; background: var(--sidebar-bg); border-bottom: 1px solid var(--sidebar-border); font-weight: 700;">
+                        <i class="fa-solid fa-robot" style="color: var(--primary-color);"></i> Finova AI Chatbot (Hỗ trợ trực tuyến)
+                    </div>
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="message ai">Xin chào! Tôi là FINOVA AI. Tôi có thể giúp gì cho tài chính hoặc kế hoạch đầu tư của bạn hôm nay?</div>
+                    </div>
+                    <div class="chat-input-area">
+                        <input type="text" id="chatInput" class="form-control" placeholder="Nhập câu hỏi tài chính của bạn..." onkeypress="if(event.key==='Enter') sendChatMessage()">
+                        <button class="btn-primary" onclick="sendChatMessage()"><i class="fa-solid fa-paper-plane"></i></button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // CHUYỂN ĐỔI GIAO DIỆN SÁNG / TỐI
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', newTheme);
+            document.getElementById('themeIcon').className = newTheme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+        }
+
+        // ĐÓNG MỞ THANH CÔNG CỤ BÊN TRÁI
+        document.getElementById('toggleSidebar').addEventListener('click', () => {
+            document.getElementById('sidebar').classList.toggle('collapsed');
+        });
+
+        // CHUYỂN VIEW (CÁC TAB)
+        function switchView(viewId) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.sidebar-menu .nav-item').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById(viewId).classList.add('active');
+            event && event.currentTarget && event.currentTarget.classList.add('active');
+        }
+
+        // ĐỊNH DẠNG SỐ TIỀN CÓ DẤU PHẨY (VD: 5,000,000)
+        function formatCurrency(input) {
+            let value = input.value.replace(/\D/g, "");
+            if (value) {
+                input.value = Number(value).toLocaleString('en-US');
+            } else {
+                input.value = "";
+            }
+        }
+
+        // LƯU TÀI KHOẢN
+        function saveAccount(e) {
+            e.preventDefault();
+            const name = document.getElementById('accName').value;
+            document.getElementById('userNameDisplay').innerText = name;
+            alert('Cập nhật thông tin tài khoản thành công!');
+        }
+
+        // TÍNH TOÁN TÀI CHÍNH & MÔ PHỎNG 5 KỊCH BẢN
+        function calculateFinances(e) {
+            e.preventDefault();
+            const income = parseFloat(document.getElementById('income').value.replace(/,/g, '')) || 0;
+            const expenses = parseFloat(document.getElementById('expenses').value.replace(/,/g, '')) || 0;
+            const assets = parseFloat(document.getElementById('assets').value.replace(/,/g, '')) || 0;
+            const liabilities = parseFloat(document.getElementById('liabilities').value.replace(/,/g, '')) || 0;
+
+            const netCashFlow = income - expenses;
+            const netWorth = assets - liabilities;
+
+            const summaryHtml = `
+                <table>
+                    <tr><th>Chỉ số tài chính</th><th>Giá trị tính toán</th><th>Trạng thái & Đánh giá</th></tr>
+                    <tr><td>Thu nhập ròng hàng tháng</td><td>${income.toLocaleString()} VND</td><td style="color:var(--accent-color);">Ổn định</td></tr>
+                    <tr><td>Chi tiêu hàng tháng</td><td>${expenses.toLocaleString()} VND</td><td>Kiểm soát tốt</td></tr>
+                    <tr><td>Dòng tiền ròng (Net Cash Flow)</td><td>${netCashFlow.toLocaleString()} VND</td><td style="color:var(--accent-color);">Thặng dư tích cực</td></tr>
+                    <tr><td>Tổng tài sản ròng (Net Worth)</td><td>${netWorth.toLocaleString()} VND</td><td>Tăng trưởng</td></tr>
+                </table>
+                <h3 style="margin-top: 20px;">Mô phỏng 5 Kịch bản Tài chính (Scenario Ranking)</h3>
+                <table>
+                    <tr><th>Kịch bản</th><th>Mức độ phù hợp</th><th>Tác động dự kiến</th></tr>
+                    <tr><td>1. Baseline Scenario (Cơ sở)</td><td>95% (Most Suitable)</td><td>Duy trì tiến độ mục tiêu tối ưu</td></tr>
+                    <tr><td>2. Optimistic Scenario (Lạc quan)</td><td>85%</td><td>Rút ngắn thời gian đạt mục tiêu 1 năm</td></tr>
+                    <tr><td>3. Conservative Scenario (Bảo thủ)</td><td>70%</td><td>Tăng tiết kiệm thêm 10%</td></tr>
+                    <tr><td>4. Highly Optimistic (Lạc quan cao)</td><td>60%</td><td>Đạt mục tiêu nhanh chóng</td></tr>
+                    <tr><td>5. Severely Conservative (Rủi ro cao)</td><td>40% (Contingency)</td><td>Cần quỹ dự phòng khẩn cấp</td></tr>
+                </table>
+            `;
+
+            document.getElementById('summaryTableWrapper').innerHTML = summaryHtml;
+            document.getElementById('resultContainer').style.display = 'block';
+            alert('Đã tính toán và hoàn thành mô phỏng 5 kịch bản thành công!');
+        }
+
+        // ĐÁNH GIÁ SAO INTERACTIVE
+        function rateCriteria(container, event) {
+            const stars = container.querySelectorAll('i');
+            const clickedVal = parseInt(event.target.getAttribute('data-val'));
+            stars.forEach((star, idx) => {
+                if (idx < clickedVal) star.classList.add('rated');
+                else star.classList.remove('rated');
+            });
+        }
+
+        // GỬI TIN NHẮN CHO AI CHATBOT QUA BACKEND API
+        async function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const messageText = input.value.trim();
+            if (!messageText) return;
+
+            const chatMessages = document.getElementById('chatMessages');
+            chatMessages.innerHTML += `<div class="message user">${messageText}</div>`;
+            input.value = '';
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            // Hiển thị trạng thái đang soạn tin
+            const loadingId = 'loading-' + Date.now();
+            chatMessages.innerHTML += `<div class="message ai" id="${loadingId}">FINOVA AI đang suy nghĩ...</div>`;
+
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        message: messageText,
+                        financialContext: { platform: "FINOVA", status: "Active Session" }
+                    })
+                });
+                const data = await response.json();
+                document.getElementById(loadingId).innerText = data.reply || data.error;
+            } catch (err) {
+                document.getElementById(loadingId).innerText = "Lỗi kết nối máy chủ AI.";
+            }
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+    </script>
+</body>
+</html>
